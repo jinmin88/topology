@@ -4,98 +4,133 @@
 
 <head>
     <title>Tutorial 1: Getting Started</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.5/cytoscape.js"></script>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <link href="cytoscape.js-panzoom.css" rel="stylesheet" type="text/css" />
+    <link href="font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
+
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+    <script src="cytoscape-panzoom.js"></script>
+    <!-- for testing with local version of cytoscape.js -->
+    <!-- <script src="../cytoscape.js/build/cytoscape.js"></script> -->
+
 </head>
 
 <style>
-    #cy {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-    }
+			body {
+				font-family: helvetica;
+				font-size: 14px;
+			}
+
+			#cy {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: 1;
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1em;
+			}
 </style>
 
 <body>
     <div id="cy"></div>
-    <div id="tooltip" style="position: absolute; display: none; background: white; border: 1px solid black; padding: 10px; border-radius: 5px; pointer-events: none; z-index: 10;"></div>
+    <div id="tooltip" style="position: absolute; display: none; background: #e0e0e0; border: 1px solid black; padding: 10px; border-radius: 5px; pointer-events: none; z-index: 10;"></div>
     <script>
         topology_data = {
             nodes: [{
                 data: {
                     id: "RT_CORE_0",
-                    ip: '10.1.1.255'
+                    ip: '10.1.1.255',
+                    tyoe: 'router'
                 }
             },{
                 data: {
                     id: 'AGG_1',
-                    ip: '10.1.1.1'
+                    ip: '10.1.1.1',
+                    type: 'agg'
                 }
             },{
                 data: {
                     id: 'AGG_2',
-                    ip: '10.1.1.2'
+                    ip: '10.1.1.2',
+                    type: 'agg'
                 }
             },
             {
                 data: {
                     id: 'AGG_3',
-                    ip: '10.1.1.3'
+                    ip: '10.1.1.3',
+                    type: 'agg'
                 }
             },
             {
                 data: {
                     id: 'EDGE_1',
-                    ip: '10.1.1.4'
+                    ip: '10.1.1.4',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_2',
-                    ip: '10.1.1.5'
+                    ip: '10.1.1.5',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_3',
-                    ip: '10.1.1.6'
+                    ip: '10.1.1.6',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_4',
-                    ip: '10.1.1.7'
+                    ip: '10.1.1.7',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_5',
-                    ip: '10.1.1.8'
+                    ip: '10.1.1.8',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_6',
-                    ip: '10.1.1.9'
+                    ip: '10.1.1.9',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_7',
-                    ip: '10.1.1.10'
+                    ip: '10.1.1.10',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_8',
-                    ip: '10.1.1.11'
+                    ip: '10.1.1.11',
+                    type: 'edge'
                 }
             },
             {
                 data: {
                     id: 'EDGE_9',
-                    ip: '10.1.1.12'
+                    ip: '10.1.1.12',
+                    type: 'edge'
                 }
             }],
             edges:[{
@@ -117,7 +152,7 @@
                     source: 'RT_CORE_0',
                     target: 'AGG_3',
                     source_interface: 'Eth1/3',
-                    target_interface: 'Eth1/32' 
+                    target_interface: 'Eth1/32'
                 }
             },{
                 data:{
@@ -208,20 +243,31 @@
         };
         let style_options = [
             {
-                selector: 'node',
-                style: {
-                    'label': 'data(id)'
-                }
+                 selector: 'node',
+                 style: {
+                    'label': function (node) { 
+                        return `${node.data("id")}\n${node.data("ip")}` 
+                    },
+                    'text-wrap': 'wrap'
+                 }
             },
+            // {
+            //     selector: 'node',
+            //     style: {
+            //         'background-image': 'router.png', // Path to your SVG file
+            //         'background-clip': 'none',
+            //         'bounds-expansion': 5,
+            //     }
+            // },
             {
                 selector: 'edge',
                 style: {
-                    //'line-color': '#ccc',
-                    'curve-style': 'bezier',
+                    'line-color': '#ccc',
+                    'curve-style': 'bezier',                   
                     'source-label': 'data(source_interface)',
-                    'source-text-offset': 40,
+                    'source-text-offset': 60,
                     'target-label': 'data(target_interface)',
-                    'target-text-offset': 40,
+                    'target-text-offset': 60,
                     'text-opacity': .5
                 }
             }
@@ -236,6 +282,31 @@
             style: style_options
         });
 
+
+        // the default values of each option are outlined below:
+        var defaults = {
+            zoomFactor: 0.05, // zoom factor per zoom tick
+            zoomDelay: 45, // how many ms between zoom ticks
+            minZoom: 0.1, // min zoom level
+            maxZoom: 10, // max zoom level
+            fitPadding: 50, // padding when fitting
+            panSpeed: 10, // how many ms in between pan ticks
+            panDistance: 10, // max pan distance per tick
+            panDragAreaSize: 75, // the length of the pan drag box in which the vector for panning is calculated (bigger = finer control of pan speed and direction)
+            panMinPercentSpeed: 0.25, // the slowest speed we can pan by (as a percent of panSpeed)
+            panInactiveArea: 8, // radius of inactive area in pan drag box
+            panIndicatorMinOpacity: 0.5, // min opacity of pan indicator (the draggable nib); scales from this to 1.0
+            zoomOnly: false, // a minimal version of the ui only with zooming (useful on systems with bad mousewheel resolution)
+
+            // icon class names
+            sliderHandleIcon: 'fa fa-minus',
+            zoomInIcon: 'fa fa-plus',
+            zoomOutIcon: 'fa fa-minus',
+            resetIcon: 'fa fa-expand'
+        };
+
+        cy.panzoom( defaults );
+
         cy.on('mouseover', 'node', function(event) {
             var node = event.target;
             var tooltipDiv = document.getElementById('tooltip');
@@ -246,21 +317,27 @@
             tooltipDiv.style.left = event.renderedPosition.x + 'px';
             tooltipDiv.style.top = event.renderedPosition.y + 'px';
         });
-        cy.on('mouseover', 'edge', function(event) {
-            var edge = event.target;
-            var tooltipDiv = document.getElementById('tooltip')
+        // cy.on('mouseover', 'edge', function(event) {
+        //     var edge = event.target;
+        //     var tooltipDiv = document.getElementById('tooltip')
 
-            // Show the tooltip with node information
-            tooltipDiv.innerHTML = 'source: ' + edge.data('source') + '<br/>source interface: ' + edge.data('source_interface') + '<br/>target: ' + edge.data('target') + '<br/>target_interface: ' + edge.data('target_interface')
-            tooltipDiv.style.display = 'block';
-            tooltipDiv.style.left = event.renderedPosition.x + 'px';
-            tooltipDiv.style.top = event.renderedPosition.y + 'px';
-        })
+        //     // Show the tooltip with node information
+        //     tooltipDiv.innerHTML = 'source: ' + edge.data('source') + '<br/>source interface: ' + edge.data('source_interface') + '<br/>target: ' + edge.data('target') + '<br/>target_interface: ' + edge.data('target_interface')
+        //     tooltipDiv.style.display = 'block';
+        //     tooltipDiv.style.left = event.renderedPosition.x + 'px';
+        //     tooltipDiv.style.top = event.renderedPosition.y + 'px';
+        // })
 
         cy.on('mouseout', 'node', function() {
             var tooltipDiv = document.getElementById('tooltip');
             tooltipDiv.style.display = 'none';
         });
+        // cv.on('mouseout', 'edge', function() {
+        //     var tooltipDiv = document.getElementById('tooltip');
+        //     tooltipDiv.style.display = 'none'
+        // })
+        
+
     </script>
 </body>
 </html>
