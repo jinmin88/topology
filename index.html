@@ -1,0 +1,266 @@
+<!doctype html>
+
+<html>
+
+<head>
+    <title>Tutorial 1: Getting Started</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.5/cytoscape.js"></script>
+</head>
+
+<style>
+    #cy {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+</style>
+
+<body>
+    <div id="cy"></div>
+    <div id="tooltip" style="position: absolute; display: none; background: white; border: 1px solid black; padding: 10px; border-radius: 5px; pointer-events: none; z-index: 10;"></div>
+    <script>
+        topology_data = {
+            nodes: [{
+                data: {
+                    id: "RT_CORE_0",
+                    ip: '10.1.1.255'
+                }
+            },{
+                data: {
+                    id: 'AGG_1',
+                    ip: '10.1.1.1'
+                }
+            },{
+                data: {
+                    id: 'AGG_2',
+                    ip: '10.1.1.2'
+                }
+            },
+            {
+                data: {
+                    id: 'AGG_3',
+                    ip: '10.1.1.3'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_1',
+                    ip: '10.1.1.4'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_2',
+                    ip: '10.1.1.5'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_3',
+                    ip: '10.1.1.6'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_4',
+                    ip: '10.1.1.7'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_5',
+                    ip: '10.1.1.8'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_6',
+                    ip: '10.1.1.9'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_7',
+                    ip: '10.1.1.10'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_8',
+                    ip: '10.1.1.11'
+                }
+            },
+            {
+                data: {
+                    id: 'EDGE_9',
+                    ip: '10.1.1.12'
+                }
+            }],
+            edges:[{
+                data: {
+                    source: 'RT_CORE_0',
+                    target: 'AGG_1',
+                    source_interface: 'Eth1/1',
+                    target_interface: 'Eth1/30'
+                }
+            },{
+                data: {
+                    source: 'RT_CORE_0',
+                    target: 'AGG_2',
+                    source_interface: 'Eth1/2',
+                    target_interface: 'Eth1/31'
+                }
+            },{
+                data: {
+                    source: 'RT_CORE_0',
+                    target: 'AGG_3',
+                    source_interface: 'Eth1/3',
+                    target_interface: 'Eth1/32' 
+                }
+            },{
+                data:{
+                    source: 'AGG_1',
+                    target: 'EDGE_1',
+                    source_interface: 'Eth1/2',
+                    target_interface: 'Eth1/3' 
+                }
+            },{
+                data:{
+                    source: 'AGG_1',
+                    target: 'EDGE_2',
+                    source_interface: 'Eth1/3',
+                    target_interface: 'Eth1/4' 
+                }
+            },{
+                data:{
+                    source: 'AGG_1',
+                    target: 'EDGE_3',
+                    source_interface: 'Eth1/4',
+                    target_interface: 'Eth1/5' 
+                }
+            },{
+                data:{
+                    source: 'AGG_2',
+                    target: 'EDGE_4',
+                    source_interface: 'Eth1/2',
+                    target_interface: 'Eth1/3' 
+                }
+            },{
+                data:{
+                    source: 'AGG_2',
+                    target: 'EDGE_5',
+                    source_interface: 'Eth1/3',
+                    target_interface: 'Eth1/4' 
+                }
+            },{
+                data:{
+                    source: 'AGG_2',
+                    target: 'EDGE_6',
+                    source_interface: 'Eth1/4',
+                    target_interface: 'Eth1/5' 
+                }
+            },{
+                data:{
+                    source: 'AGG_3',
+                    target: 'EDGE_7',
+                    source_interface: 'Eth1/2',
+                    target_interface: 'Eth1/3' 
+                }
+            },{
+                data:{
+                    source: 'AGG_3',
+                    target: 'EDGE_8',
+                    source_interface: 'Eth1/3',
+                    target_interface: 'Eth1/4' 
+                }
+            },{
+                data:{
+                    source: 'AGG_3',
+                    target: 'EDGE_9',
+                    source_interface: 'Eth1/4',
+                    target_interface: 'Eth1/5' 
+                }
+            }]
+        }
+        
+        let layout_breadthfirst = {
+            name: 'breadthfirst',
+            fit: true, // whether to fit the viewport to the graph
+            directed: false, // whether the tree is directed downwards (or edges can point in any direction if false)
+            padding: 30, // padding on fit
+            circle: false, // put depths in concentric circles if true, put depths top down if false
+            grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
+            spacingFactor: 1.75, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+            avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
+            nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+            roots: undefined, // the roots of the trees
+            depthSort: undefined, // a sorting function to order nodes at equal depth. e.g. function(a, b){ return a.data('weight') - b.data('weight') }
+            animate: false, // whether to transition the node positions
+            animationDuration: 500, // duration of animation in ms if enabled
+            animationEasing: undefined, // easing of animation if enabled,
+            animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+            ready: undefined, // callback on layoutready
+            stop: undefined, // callback on layoutstop
+            transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+        };
+        let style_options = [
+            {
+                selector: 'node',
+                style: {
+                    'label': 'data(id)'
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                    //'line-color': '#ccc',
+                    'curve-style': 'bezier',
+                    'source-label': 'data(source_interface)',
+                    'source-text-offset': 40,
+                    'target-label': 'data(target_interface)',
+                    'target-text-offset': 40,
+                    'text-opacity': .5
+                }
+            }
+        ]
+
+        layout_breadthfirst.roots = ['RT_CORE_0']  //fill start node
+
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: topology_data,
+            layout: layout_breadthfirst,
+            style: style_options
+        });
+
+        cy.on('mouseover', 'node', function(event) {
+            var node = event.target;
+            var tooltipDiv = document.getElementById('tooltip');
+
+            // Show the tooltip with node information
+            tooltipDiv.innerHTML = 'Name: ' + node.data('id') + '<br>IP: ' + node.data('ip');
+            tooltipDiv.style.display = 'block';
+            tooltipDiv.style.left = event.renderedPosition.x + 'px';
+            tooltipDiv.style.top = event.renderedPosition.y + 'px';
+        });
+        cy.on('mouseover', 'edge', function(event) {
+            var edge = event.target;
+            var tooltipDiv = document.getElementById('tooltip')
+
+            // Show the tooltip with node information
+            tooltipDiv.innerHTML = 'source: ' + edge.data('source') + '<br/>source interface: ' + edge.data('source_interface') + '<br/>target: ' + edge.data('target') + '<br/>target_interface: ' + edge.data('target_interface')
+            tooltipDiv.style.display = 'block';
+            tooltipDiv.style.left = event.renderedPosition.x + 'px';
+            tooltipDiv.style.top = event.renderedPosition.y + 'px';
+        })
+
+        cy.on('mouseout', 'node', function() {
+            var tooltipDiv = document.getElementById('tooltip');
+            tooltipDiv.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
